@@ -7,7 +7,7 @@ GitHub:		https://github.com/tonmaker
 ==============================================================================*/
 #include "LPC13xx.h"
 
-//Definições do I2C
+//DefiniÃ§Ãµes do I2C
 #define I2C_SPEED 100000  // 100kHz
 #define I2C_WRITE 0
 #define I2C_READ 1
@@ -35,9 +35,9 @@ void I2C_Init(void){
 }
 
 void I2C_Start(void){   
-	LPC_I2C->CONSET = (1 << 5);  						//Set STA Start bit
-    while (!(LPC_I2C->CONSET & (1 << 3)));				//Espera flag SI
-    LPC_I2C->CONCLR = (1 << 5);  						//Limpa STA após enviado
+    	LPC_I2C->CONSET = (1 << 5);  						//Set STA Start bit
+    	while (!(LPC_I2C->CONSET & (1 << 3)));				//Espera flag SI
+    	LPC_I2C->CONCLR = (1 << 5);  						//Limpa STA apÃ³s enviado
 }
 
 void I2C_Restart(void){   
@@ -48,26 +48,26 @@ void I2C_Restart(void){
 }
 
 void I2C_Stop(void){
-    LPC_I2C->CONSET = (1 << 4);  						//Set STO Stop bit
-    LPC_I2C->CONCLR = (1 << 3);  						//Limpa SI
-    while (LPC_I2C->CONSET & (1 << 4));  				//Espera STOP ser concluído
+    	LPC_I2C->CONSET = (1 << 4);  						//Set STO Stop bit
+    	LPC_I2C->CONCLR = (1 << 3);  						//Limpa SI
+    	while (LPC_I2C->CONSET & (1 << 4));  				//Espera STOP ser concluÃ­do
 }
 
 void I2C_SendByte(uint8_t data){
-    LPC_I2C->DAT = data;
+    	LPC_I2C->DAT = data;
 	LPC_I2C->CONCLR = (1 << 3);							//Limpa SI
 	while (!(LPC_I2C->CONSET & (1 << 3))); 
 }
 
 uint8_t I2C_ReceiveByteACK(void){
-	LPC_I2C->CONSET = (1 << 2);							//AA = 1 Envia ACK após receber byte
+	LPC_I2C->CONSET = (1 << 2);							//AA = 1 Envia ACK apÃ³s receber byte
 	LPC_I2C->CONCLR = (1 << 3) | (1 << 5);				//Clear SI
 	while (!(LPC_I2C->CONSET & (1 << 3))); 				//Espera SI ser setado
 	return LPC_I2C->DAT;
 }
 
 uint8_t I2C_ReceiveByteNACK(void){
-	LPC_I2C->CONCLR = (1 << 2) | (1 << 3);				//AA = 0 Envia NACK após receber byte; Clear SI
+	LPC_I2C->CONCLR = (1 << 2) | (1 << 3);				//AA = 0 Envia NACK apÃ³s receber byte; Clear SI
 	while (!(LPC_I2C->CONSET & (1 << 3))); 				//Espera SI ser setado
 	return LPC_I2C->DAT;
 }
@@ -83,14 +83,14 @@ void I2C_Write24C256(uint16_t memAddr, uint8_t Value){
 }
 
 uint8_t I2C_Read24C256(uint16_t memAddr){
-    uint8_t data;
-    I2C_Start();
-    I2C_SendByte(EEPROM_ADDR + I2C_WRITE);
-    I2C_SendByte(memAddr >> 8);
-    I2C_SendByte(memAddr & 0xFF);
-    I2C_Restart();
-    I2C_SendByte(EEPROM_ADDR + I2C_READ);
+	uint8_t data;
+	I2C_Start();
+	I2C_SendByte(EEPROM_ADDR + I2C_WRITE);
+	I2C_SendByte(memAddr >> 8);
+	I2C_SendByte(memAddr & 0xFF);
+	I2C_Restart();
+	I2C_SendByte(EEPROM_ADDR + I2C_READ);
 	data = I2C_ReceiveByteNACK();
-    I2C_Stop();
-    return data;
+	I2C_Stop();
+	return data;
 }
